@@ -17,7 +17,20 @@ function Register() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    localStorage.setItem("registeredUser", JSON.stringify(formData));
+
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    const emailExists = existingUsers.some(
+      (user) => user.email === formData.email
+    );
+    if (emailExists) {
+      alert("⚠️ Email already registered. Please login.");
+      return;
+    }
+
+    const updatedUsers = [...existingUsers, formData];
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
     alert("✅ Registration successful! Proceed to login.");
     navigate("/login");
   };

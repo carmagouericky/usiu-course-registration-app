@@ -17,7 +17,9 @@ function Login() {
 
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
     const userData = storedUsers.find(
-      (user) => user.email === credentials.email
+      (user) =>
+        user.email === credentials.email &&
+        user.password === credentials.password
     );
 
     if (userData) {
@@ -33,17 +35,7 @@ function Login() {
         },
       });
     } else {
-      console.log("Bypassing login, using default student info...");
-      navigate("/course-selection", {
-        state: {
-          student: {
-            firstName: "Default",
-            lastName: "User",
-            idNumber: "000000",
-            email: credentials.email || "default@example.com",
-          },
-        },
-      });
+      alert("❌ Invalid email or password. Please try again.");
     }
   };
 
