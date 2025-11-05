@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
-// Some lecturers intentionally repeated across courses
 const coursesList = [
   { name: "Software Engineering", lecturers: ["Dr. Kimani", "Prof. Wanjiku"] },
   { name: "Artificial Intelligence", lecturers: ["Dr. Otieno", "Dr. Kimani"] },
@@ -30,7 +30,6 @@ const CourseSelection = () => {
   const handleChange = (index, field, value) => {
     const updated = [...selectedCourses];
 
-    // Prevent same lecturer teaching multiple selected courses
     if (field === "lecturer") {
       const lecturerAlreadyChosen = updated.some(
         (item, i) => item.lecturer === value && i !== index
@@ -45,12 +44,23 @@ const CourseSelection = () => {
     setSelectedCourses(updated);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedCourses.some((c) => c.course === "" || c.lecturer === "")) {
       alert("Please complete all selections!");
       return;
     }
-    navigate("/summary", { state: { student, selectedCourses } });
+
+    try {
+      await axios.post("http://localhost:5000/courses", {
+        student,
+        selectedCourses,
+      });
+      alert("✅ Courses saved successfully!");
+      navigate("/summary", { state: { student, selectedCourses } });
+    } catch (err) {
+      console.error("Error saving courses:", err);
+      alert("⚠️ Failed to save courses. Please try again.");
+    }
   };
 
   return (

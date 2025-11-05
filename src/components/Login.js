@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const navigate = useNavigate();
@@ -12,18 +13,12 @@ function Login() {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:5000/login", credentials);
+      const userData = res.data;
 
-    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const userData = storedUsers.find(
-      (user) =>
-        user.email === credentials.email &&
-        user.password === credentials.password
-    );
-
-    if (userData) {
-      console.log("Logged in as:", userData.email);
       navigate("/course-selection", {
         state: {
           student: {
@@ -34,8 +29,8 @@ function Login() {
           },
         },
       });
-    } else {
-      alert("❌ Invalid email or password. Please try again.");
+    } catch (err) {
+      alert("❌ Invalid email or password.");
     }
   };
 
@@ -46,31 +41,14 @@ function Login() {
         <p className="subtitle">Access your USIU course registration portal</p>
 
         <form onSubmit={handleLogin}>
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={credentials.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={credentials.password}
-            onChange={handleChange}
-            required
-          />
+          <input name="email" type="email" placeholder="Email" value={credentials.email} onChange={handleChange} required />
+          <input name="password" type="password" placeholder="Password" value={credentials.password} onChange={handleChange} required />
           <button type="submit">Login</button>
         </form>
 
         <p className="footer-text">
           Don’t have an account?{" "}
-          <span
-            style={{ color: "#FDB913", cursor: "pointer" }}
-            onClick={() => navigate("/register")}
-          >
+          <span style={{ color: "#FDB913", cursor: "pointer" }} onClick={() => navigate("/register")}>
             Register here
           </span>
         </p>
